@@ -1,0 +1,43 @@
+package gravitation1;
+
+public class RunGravitation {
+
+	private static final double timeIncrement = 10;
+	private static final int increments = 100;
+	
+	private static final double EARTH_MASS = 5.972 * Math.pow(10, 24);
+	private static final double MOON_MASS = 7.3476739 * Math.pow(10, 22);
+	
+	private static final double DISTANCE_EARTH_MOON = 385000000;
+	
+	private static final double MOON_VELOCITY = 36830000 * 3600; //m per second
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		level1();
+		//level2();
+		//level3();
+		//challenge();
+	}
+	
+	public static void level1()
+	{
+		GravitationEngine universe = new GravitationEngine(System.out);
+		universe.addProjectile(new PointProjectile(new Vector3(), new Vector3(), EARTH_MASS, "Earth"));
+		universe.addProjectile(new PointProjectile(new Vector3(DISTANCE_EARTH_MOON, 0, 0), new Vector3(0, 0, MOON_VELOCITY), MOON_MASS, "Moon"));
+		System.out.println(universe.header());
+		universe.run(timeIncrement, increments, true);
+	}
+	
+	public static void level2()
+	{
+	}
+	
+	public static void level3()
+	{
+	}
+	
+	public static void challenge()
+	{
+	}
+}

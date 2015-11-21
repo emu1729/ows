@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy 3 elements to &apos;challenge.jpg&apos;&#x0A;- Original project: &apos;Computational Science&apos;&#x0A;- Destination element: &apos;challenge.jpg&apos;&#x0A;- Original elements:&#x0A;     signal.dat&#x0A;     background.dat&#x0A;     decisionTreeData.dat" description="Copy files" element1="src/signal.dat" element2="src/background.dat" element3="src/decisionTreeData.dat" files="3" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1427904647996" target="/Computational Science/challenge.jpg" units="0" version="1.0"/>
+</session>

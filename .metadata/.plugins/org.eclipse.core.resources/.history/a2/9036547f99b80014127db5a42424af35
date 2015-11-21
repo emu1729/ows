@@ -1,0 +1,23 @@
+package boltzmannHomework;
+
+import java.awt.Color;
+
+public class ParticleDriver {
+
+	private static final double containerSize = 0;
+	private static final double minSpeed = 0;
+	private static final double maxSpeed = 0;
+	private static final double eachMass = 0;
+	private static final Color eachColor = Color.BLUE;
+	private static final int nParticles = 0;
+	private static final double deltaTime = 0;
+	private static final double meanFreeTime = 0;
+	
+	public static void main(String[] args) {
+		ParticleContainer container = new ParticleContainer(containerSize, containerSize, containerSize);
+		RandomGenerator generator = new FlatGenerator(eachMass, eachColor, meanFreeTime, container, minSpeed, maxSpeed);
+		container.addRandomParticles(generator, nParticles);
+		container.run(deltaTime);
+	}
+
+}

@@ -1,0 +1,36 @@
+package statistics;
+
+public class StatisticsDriver {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		level_1();
+	}
+	
+	public static void level_1(){
+		double increment = 0.01;
+		double range = 500;
+		int observedBackground = 47;
+		int expectedBackground = 45;
+		double numOfRandom = 10e2;
+		double bestLambda = 0;
+		double bestNumberCorrect = 0;
+		for(int i = 0; i < range; i++){
+			double lambda = expectedBackground + increment * i;
+			PoissonDistribution potentialPoisson = new PoissonDistribution(lambda);
+			int numberCorrect = 0;
+			for(int j = 0; j < numOfRandom; j++){
+				int randomNumber = potentialPoisson.getRandomNumber();
+				if (randomNumber == observedBackground){
+					numberCorrect++;
+				}
+			}
+			System.out.println(lambda + "\t" + numberCorrect);
+			if (numberCorrect > bestNumberCorrect){
+				bestLambda = lambda;
+				bestNumberCorrect = numberCorrect;
+			}
+		}
+		System.out.println(bestLambda + "\t" + bestNumberCorrect);
+	}
+}

@@ -1,0 +1,35 @@
+import java.util.Scanner;
+
+public class ReadFile {
+
+	public static void main(String[] args) {
+		System.out.print( "Enter the filename: " );   // Prompt the user for a file name
+		String fileName = scanner.nextLine();         // get a file name from the user
+		File file = new File( fileName );             // create a File object
+
+		if ( file.exists() )                          // check that the file exists
+		{                                             // before trying to create a
+                                              // Scanner to read the file
+			// Create a Scanner from the file. 
+			// This statement can cause a FileNotFoundException.
+			Scanner inFile = new Scanner( file );
+
+			// For each line in the file, read in the line and display it with the line number
+			int lineNum = 0;
+
+			// Use the results of calling the hasNext method to 
+			// determine if you are at the end of the file before 
+			// reading the next line of the file.
+			while ( inFile.hasNext() )
+    {
+        String line = inFile.nextLine();   // read the next line
+
+        // Output the line read to the screen for the user
+        System.out.println( ++lineNum + ": " + line );
+    }
+
+    // When we're done reading the file,
+    // close the Scanner object attached to the file
+    inFile.close();
+}
+	}

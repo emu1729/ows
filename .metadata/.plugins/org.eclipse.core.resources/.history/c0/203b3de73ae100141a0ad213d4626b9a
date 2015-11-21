@@ -1,0 +1,185 @@
+package statistics;
+
+import java.util.*;
+
+public class StatisticsDriver {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		level_1();
+		//level_2();
+		//level_3();
+		//challenge();
+	}
+	
+	public static void level_1(){
+		double increment = 0.1;
+		int range = 50;
+		int observedBackground = 47;
+		int expectedBackground = 45;
+		double numOfRandom = 10e4; //change number of tries
+		double numOfPseudoExperiments = 10e2; //change number of pseudoExperiments
+		double trueLambda = 0;
+		ArrayList<Double> potentialLambdas = new ArrayList<Double>();
+		PoissonDistribution potentialPoisson = new PoissonDistribution();
+		trueLambda = potentialPoisson.getBestLambda(expectedBackground, observedBackground, range, numOfRandom, increment);
+		for(int i = 0; i < numOfPseudoExperiments; i++){
+			System.out.println(i+1);
+			int pseudoObservedBackground = potentialPoisson.getRandomNumber(trueLambda);
+			System.out.println(pseudoObservedBackground);
+			double potentialLambda = potentialPoisson.getBestLambda(expectedBackground, pseudoObservedBackground, range, numOfRandom, increment);
+			potentialLambdas.add(potentialLambda);
+		}
+		int count = 0;
+		double needed = numOfPseudoExperiments * 0.68/2;
+		int i = 0;
+		while(count < needed){
+			count = 0;
+			for(Double potentialLambda: potentialLambdas){
+				if(potentialLambda < (trueLambda + i * increment) && potentialLambda > trueLambda){
+					count++;
+				}
+			}
+			i++;
+		}
+		double error1 = i * increment;
+		count = 0;
+		int j = 0;
+		while(count < needed){
+			count = 0;
+			for(Double potentialLambda: potentialLambdas){
+				if(potentialLambda > (trueLambda - j * increment) && potentialLambda < trueLambda){
+					count++;
+				}
+			}
+			i++;
+		}
+		double error2 = j * increment;
+		System.out.println(trueLambda + "\t" + error1 + "\t" + error2);
+	}
+	
+	public static void level_2(){
+		ArrayList<Leaf> decisionTree = new ArrayList<Leaf>();
+		decisionTree.add(new Leaf(3, 80, 81));
+		decisionTree.add(new Leaf(8, 42, 48));
+		decisionTree.add(new Leaf(12, 30, 40));
+		decisionTree.add(new Leaf(11, 20, 29));
+		int sigmaTries = 200;
+		double sigmaIncrement = 0.01;
+		double triesPerLeaf = 10e2; //change number of tries
+		PoissonDistribution potentialPoisson = new PoissonDistribution();
+		double trueSigma = potentialPoisson.getBestSigma(decisionTree, sigmaTries, sigmaIncrement, triesPerLeaf);
+		System.out.println(trueSigma);
+		double numOfPseudoExperiments = 10e1; //change number of pseudoExperiments
+		ArrayList<Double> potentialSigmas = new ArrayList<Double>();
+		for(int i = 0; i < numOfPseudoExperiments; i++){
+			ArrayList<Leaf> potentialTree = potentialPoisson.getPotentialTree(decisionTree, trueSigma);
+			double potentialSigma = potentialPoisson.getBestSigma(potentialTree, sigmaTries, sigmaIncrement, triesPerLeaf);
+			potentialSigmas.add(potentialSigma);
+			System.out.println(i+1 + "\t" + potentialSigma);
+		}
+		int count = 0;
+		double needed = numOfPseudoExperiments * 0.68/2;
+		int i = 0;
+		while(count < needed){
+			count = 0;
+			for(Double potentialSigma: potentialSigmas){
+				if(potentialSigma < (trueSigma + i * sigmaIncrement) && potentialSigma > trueSigma){
+					count++;
+				}
+			}
+			i++;
+		}
+		double error1 = i * sigmaIncrement;
+		count = 0;
+		int j = 0;
+		while(count < needed){
+			count = 0;
+			for(Double potentialSigma: potentialSigmas){
+				if(potentialSigma < trueSigma && potentialSigma > (trueSigma - j * sigmaIncrement)){
+					count++;
+				}
+			}
+			i++;
+		}
+		double error2 = i * sigmaIncrement;
+		System.out.println(trueSigma + "\t" + error1 + "\t" + error2);
+	}
+	
+	public static void level_3(){
+		ArrayList<Leaf> decisionTree = new ArrayList<Leaf>();
+		decisionTree.add(new Leaf(3, 80, 81));
+		decisionTree.add(new Leaf(8, 42, 48));
+		decisionTree.add(new Leaf(12, 30, 40));
+		decisionTree.add(new Leaf(11, 20, 29));
+		int sigmaTries = 200;
+		double sigmaIncrement = 0.01;
+		double triesPerLeaf = 10e2; //change tries
+		PoissonDistribution potentialPoisson = new PoissonDistribution();
+		potentialPoisson.setBackgroundUncertainty(0.2);
+		double trueSigma = potentialPoisson.getBestSigma(decisionTree, sigmaTries, sigmaIncrement, triesPerLeaf);
+		System.out.println(trueSigma);
+		double numOfPseudoExperiments = 10e1; //change number of pseudoExperiments
+		ArrayList<Double> potentialSigmas = new ArrayList<Double>();
+		for(int i = 0; i < numOfPseudoExperiments; i++){
+			ArrayList<Leaf> potentialTree = potentialPoisson.getPotentialTree(decisionTree, trueSigma);
+			double potentialSigma = potentialPoisson.getBestSigma(potentialTree, sigmaTries, sigmaIncrement, triesPerLeaf);
+			potentialSigmas.add(potentialSigma);
+			System.out.println(i+1 + "\t" + potentialSigma);
+		}
+		int count = 0;
+		double needed = numOfPseudoExperiments * 0.68/2;
+		int i = 0;
+		while(count < needed){
+			count = 0;
+			for(Double potentialSigma: potentialSigmas){
+				if(potentialSigma < (trueSigma + i * sigmaIncrement) && potentialSigma > trueSigma){
+					count++;
+				}
+			}
+			i++;
+		}
+		double error1 = i * sigmaIncrement;
+		int j = 0;
+		while(count < needed){
+			count = 0;
+			for(Double potentialSigma: potentialSigmas){
+				if(potentialSigma < trueSigma && potentialSigma > (trueSigma - j * sigmaIncrement)){
+					count++;
+				}
+			}
+			i++;
+		}
+		double error2 = i * sigmaIncrement;
+		System.out.println(trueSigma + "\t" + error1 + "\t" + error2);
+	}
+	
+	public static void challenge(){
+		ArrayList<Leaf> decisionTree = new ArrayList<Leaf>();
+		decisionTree.add(new Leaf(3, 80, 81));
+		decisionTree.add(new Leaf(8, 42, 48));
+		decisionTree.add(new Leaf(12, 30, 40));
+		decisionTree.add(new Leaf(11, 20, 29));
+		ArrayList<Leaf> trueTree = new ArrayList<Leaf>();
+		trueTree.add(new Leaf(3, 80, 80));
+		trueTree.add(new Leaf(8, 42, 42));
+		trueTree.add(new Leaf(12, 30, 30));
+		trueTree.add(new Leaf(11, 20, 20));
+		PoissonDistribution potentialPoisson = new PoissonDistribution();
+		potentialPoisson.setBackgroundUncertainty(0.2);
+		double trueSigma = 0;
+		double numOfPseudoExperiments = 10e5; //change number of pseudoExperiments
+		double goodBoundary = potentialPoisson.getMerit(trueTree, decisionTree); 
+		System.out.println(goodBoundary);
+		int goodExperiments = 0;
+		for(int i = 0; i < numOfPseudoExperiments; i++){
+			ArrayList<Leaf> potentialTree = potentialPoisson.getPotentialTree(decisionTree, trueSigma);
+			double merit = potentialPoisson.getMerit(trueTree, potentialTree);
+			if (merit < goodBoundary){
+				goodExperiments++;
+			}
+		}
+		double pValue = goodExperiments/numOfPseudoExperiments;
+		System.out.println(pValue);
+	}
+}

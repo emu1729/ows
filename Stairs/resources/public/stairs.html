@@ -1,0 +1,61 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Stairs</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/stairs.css">
+    <link rel="stylesheet" type="text/css" href="/jslib/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/jslib/bootstrap/css/bootstrap-responsive.css">
+<style>
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="page-header">
+        <h1 style="margin: 30px;">Stairs</h1>
+    </div>
+
+    <div class="row">
+        <div class="span2">Toon
+            <input id="floors" type="text" value="5" maxlength="2" style="width: 3em;" />
+            verdiepingen met
+	     <input id="streams" type="text" value="3" maxlength="2"
+        style="width: 3em;" /> stromen elke
+        </div>
+        <div class="span2">
+            <input type="button" id="generate" value="Toon" class="btn">
+	   
+	</div>
+    </div>
+
+    <div class="row" id="stairs-input">
+    </div>
+
+    <div class="row" id="buttons" style="visibility:hidden;">
+       <input type="button" id="show" value="Don't press" class="btn" />
+       <input type="button" id="goback" value="&lt;" class="btn" />
+       <input type="button" id="goforward" value="&gt;" class="btn" /> 
+       <input type="button" id="start" value="Start" class="btn" /> 
+      </div>
+    <div class="row" id="stairs-output"></div>
+    </div>
+
+   <canvas id="theCanvas" width="400px" height="400px"/>
+
+</div>
+
+
+
+<script type="text/javascript" src="/cljs/stairs.js"></script>
+<script type="text/javascript">
+    tarapana.stairs.initPage();
+</script>
+
+
+</body>
+</html>
+  
+  

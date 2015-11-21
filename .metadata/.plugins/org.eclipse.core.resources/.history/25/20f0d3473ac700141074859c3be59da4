@@ -1,0 +1,351 @@
+package chemicalReactionsHomework;
+
+import java.util.ArrayList;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
+
+import javax.swing.JFrame;
+
+/**
+ * @author Peter Dong
+ * A whole bunch of Particles in a box with rigid walls
+ */
+public class ParticleContainer {
+
+	private Vector3 size;
+	
+	private List<Particle> particles = new CopyOnWriteArrayList<Particle>();
+	private List<Particle> toBeAdded = new ArrayList<Particle>();
+	private ParticleDictionary dict = new ParticleDictionary();
+	private ReactionDictionary reactDict = new ReactionDictionary();
+	
+	private double reactionRadius = 0;
+	private double kineticBarrier = 0;
+	
+	/**
+	 * @param xSize The size of the box in the x direction
+	 * @param ySize The size of the box in the y direction
+	 * @param zSize The size of the box in the z direction
+	 */
+	public ParticleContainer(double xSize, double ySize, double zSize, double reactionRadius) {
+		size = new Vector3(xSize, ySize, zSize);
+		this.reactionRadius = reactionRadius;
+	}
+	
+	public void setKineticBarrier(double kineticBarrier)
+	{
+		this.kineticBarrier = kineticBarrier;
+	}
+	
+	public double getXSize() {
+		return size.getX();
+	}
+
+	public double getYSize() {
+		return size.getY();
+	}
+	
+	public double getZSize() {
+		return size.getZ();
+	}
+	
+	public ParticleDictionary getDictionary() {
+		return dict;
+	}
+	
+	public ReactionDictionary getReactionDictionary() {
+		return reactDict;
+	}
+	
+	public double getTemperature() {
+		double sumKE = 0;
+		for (Particle part : particles) {
+			double speed = part.getVelocity().magnitude();
+			sumKE += .5 * part.getMass() * speed * speed;
+		}
+		
+		return sumKE / particles.size() * 2 / 3 / 1.38E-23;
+	}
+	
+	/**
+	 * @param part The Particle to add to the container
+	 */
+	public void addParticle(Particle part) {
+		particles.add(part);
+	}
+	
+	public void removeParticle(Particle part) {
+		particles.remove(part);
+	}
+	
+	/**
+	 * @param generator The RandomGenerator used to create the random distribution
+	 * @param number The number of particles to create
+	 */
+	public void addRandomParticles(RandomGenerator generator, int number, String name) {
+		for (int i = 0; i < number; ++i) {
+			addParticle(generator.getNextParticle(name));
+		}
+	}
+	
+	private void checkCollisions(Particle particle) {
+		List<Particle> closeParticles = new ArrayList<Particle>();
+		closeParticles.add(particle);
+		
+		for (Particle part : particles) {
+			if (Math.abs(particle.getPosition().getX() - part.getPosition().getX()) < reactionRadius
+					|| Math.abs(particle.getPosition().getY() - part.getPosition().getY()) < reactionRadius 
+					|| Math.abs(particle.getPosition().getZ() - part.getPosition().getZ()) < reactionRadius) {
+				Vector3 diff = Vector3.subtract(particle.getPosition(), part.getPosition());
+				if (diff.magnitude() < reactionRadius) {
+					closeParticles.add(part);
+				}
+			}
+				
+		}
+		
+		if (closeParticles.size() > 1) {
+			//doReaction(closeParticles, particle);
+			doReaction1(closeParticles, particle);
+		}
+	}
+	
+	public Map<String, Integer> getParticleMap() {
+		Map<String, Integer> response = new HashMap<String, Integer>();
+		
+		// TODO Fill in the map here
+		Set<String> names = dict.getList();
+		for(String s: names)
+		{
+			int count = 0;
+			for(Particle p: getParticles())
+			{
+				if (s.equals(p.getName()))
+				{
+					count++;
+				}
+			}
+			response.put(s, count);
+		}
+		return response;
+	}
+	
+	private boolean doReaction1(List<Particle> list, Particle particle) {
+		Set<Particle> reactants = new HashSet<Particle>();
+		List<Particle> products = new ArrayList<Particle>();
+		Reaction react = getReactionDictionary().getReaction(particle);
+		if (react == null){
+			return false; }
+		else {
+			kineticBarrier = react.getActivationEnergy();
+			if (react.getCatalyst() != null) {
+				for(Particle part: list){
+					if(part.getName().equals(react.getCatalyst())){
+						kineticBarrier = 0;
+					}
+				}
+			}
+			for (String reactantName: react.getReactants()) {
+				int count = 0;
+				for (Particle part: list) {
+					if(part.getName().equals(reactantName)) {
+						 if(count == 0) {
+						 reactants.add(part); 
+						 }
+						 count++;
+						 break;
+					}
+				}
+			}
+			if(reactants.size() == react.getNumReactants()){
+				Vector3 totalMomentum = new Vector3();
+				double kineticEnergy = 0;
+				for(Particle part: reactants) {
+					totalMomentum = totalMomentum.add(Vector3.scale(part.getVelocity(), part.getMass()));
+					double speed = part.getVelocity().magnitude();
+					kineticEnergy += speed*speed*part.getMass();
+				}
+				if(kineticEnergy > kineticBarrier){
+					for(Particle part: reactants) {
+						removeParticle(part);
+					}
+					Vector3 partialMomentum = totalMomentum.scale(1./react.getNumReactants());
+					for(String productName: react.getProducts()) {
+						Vector3 newVelocity = partialMomentum.scale(1./dict.getMass(productName));
+						products.add(dict.makeParticle(particle.getPosition(), newVelocity, productName));
+					}
+					for(Particle part: products) {
+						toBeAdded.add(part);
+					}
+					System.out.println(getParticleMap());
+					return true;
+					}
+				else {
+					return false;
+				}
+			}
+			else{
+				return false;
+			}
+		}
+	}
+	
+	private boolean doReaction(List<Particle> list, Particle particle) {
+		// TODO Write this function
+			Vector3 totalMomentum = new Vector3();
+			for(Particle i: list)
+			{
+				if (i.getName().equals("CAT"))
+				{
+					kineticBarrier = 0;
+				}
+			}
+			for(Particle q: list)
+			{
+				if((particle.getName().equals("NH3") && q.getName().equals("HCl")) || (particle.getName().equals("HCl") && q.getName().equals("NH3")))
+				{
+					//MV = m1v1 + m2v2
+					totalMomentum = Vector3.scale(particle.getVelocity(), particle.getMass()).add(Vector3.scale(q.getVelocity(), q.getMass()));
+					Vector3 newVelocity = Vector3.scale(totalMomentum, 1/dict.getMass("NH4Cl"));
+					//Position = average position
+					Vector3 newPosition = particle.getPosition();
+					addParticle(dict.makeParticle(newPosition, newVelocity, "NH4Cl"));
+					removeParticle(particle);
+					removeParticle(q);
+					return false;
+				}
+				
+				else if((particle.getName().equals("HCO3") && q.getName().equals("H3O")) || (particle.getName().equals("H30") && q.getName().equals("HCO3")))
+				{
+					double kineticEnergy = Math.pow(particle.getVelocity().magnitude(),2) * particle.getMass() + Math.pow(q.getVelocity().magnitude(),2) * q.getMass();
+					if ((kineticEnergy > kineticBarrier))
+					{
+						removeParticle(particle);
+						removeParticle(q);
+						//mava + mbvb + mcvc = m1v1 + m2v2
+						totalMomentum = Vector3.scale(particle.getVelocity(), particle.getMass()).add(Vector3.scale(q.getVelocity(), q.getMass()));
+						Vector3 newVelocity1 = Vector3.scale(totalMomentum, 1/(3*dict.getMass("H2O")));
+						Vector3 newVelocity2 = Vector3.scale(totalMomentum, 1/(3*dict.getMass("CO2")));
+						//Position = average position
+						Vector3 newPosition = particle.getPosition();
+						addParticle(dict.makeParticle(newPosition, newVelocity1, "H2O"));
+						addParticle(dict.makeParticle(newPosition, newVelocity1, "H2O"));
+						addParticle(dict.makeParticle(newPosition, newVelocity2, "CO2"));
+						return false;
+					}
+				}
+				
+			}
+			
+			if (particle.getName().equals("H2O"))
+			{
+				for (Particle part1: list) {
+					for (Particle part2: list) {
+						if ((part1.getName().equals("H2O") && part2.getName().equals("CO2")) && (part1.getPosition().magnitude() != particle.getPosition().magnitude()))
+						{
+							double kineticEnergy = Math.pow(particle.getVelocity().magnitude(),2) * particle.getMass() + Math.pow(part1.getVelocity().magnitude(),2) * part1.getMass() + Math.pow(part2.getVelocity().magnitude(),2) * part2.getMass();
+							if ((kineticEnergy > kineticBarrier)) {
+							removeParticle(particle);
+							removeParticle(part1);
+							removeParticle(part2);
+							//mava + mbvb + mcvc = m1v1 + m2v2
+							totalMomentum = Vector3.scale(particle.getVelocity(), particle.getMass()).add(Vector3.scale(part1.getVelocity(), part1.getMass())).add(Vector3.scale(part2.getVelocity(), part2.getMass()));
+							Vector3 newVelocity1 = Vector3.scale(totalMomentum, 1/(2*dict.getMass("HCO3")));
+							Vector3 newVelocity2 = Vector3.scale(totalMomentum, 1/(2*dict.getMass("H3O")));
+							//Position = average position
+							Vector3 newPosition = particle.getPosition();
+							addParticle(dict.makeParticle(newPosition, newVelocity1, "HCO3"));
+							addParticle(dict.makeParticle(newPosition, newVelocity2, "H3O"));
+							return false;
+							}
+						}
+					}
+				}
+				
+			}
+			if (particle.getName().equals("CO2"))
+			{
+				for (Particle part1: list) {
+					for (Particle part2: list) {
+						if ((part1.getName().equals("H2O") && part2.getName().equals("H2O")) && (part1.getVelocity().magnitude() != part2.getVelocity().magnitude()))
+						{
+							double kineticEnergy = Math.pow(particle.getVelocity().magnitude(),2) * particle.getMass() + Math.pow(part1.getVelocity().magnitude(),2) * part1.getMass() + Math.pow(part2.getVelocity().magnitude(),2) * part2.getMass();
+							if ((kineticEnergy > kineticBarrier)) {
+							removeParticle(particle);
+							removeParticle(part1);
+							removeParticle(part2);
+							//mava + mbvb + mcvc = m1v1 + m2v2
+							totalMomentum = Vector3.scale(particle.getVelocity(), particle.getMass()).add(Vector3.scale(part1.getVelocity(), part1.getMass())).add(Vector3.scale(part2.getVelocity(), part2.getMass()));
+							Vector3 newVelocity1 = Vector3.scale(totalMomentum, 1/(2*dict.getMass("HCO3")));
+							Vector3 newVelocity2 = Vector3.scale(totalMomentum, 1/(2*dict.getMass("H3O")));
+							//Position = average position
+							Vector3 newPosition = particle.getPosition();
+							addParticle(dict.makeParticle(newPosition, newVelocity1, "HCO3"));
+							addParticle(dict.makeParticle(newPosition, newVelocity2, "H3O"));
+							return false;
+							}
+						}
+					}
+				}
+				
+			} 
+			
+			return false;
+	}
+	
+	public List<Particle> getParticles() {
+		return particles;
+	}
+	
+	/**
+	 * This advances all the particles by one time step
+	 * @param deltaTime The amount of time to advance the particle collection by
+	 */
+	public void advanceParticles(double deltaTime) {
+		for (Particle proj : particles) {
+			proj.update(deltaTime);
+		}
+		for (Particle proj : particles) {
+			if (particles.contains(proj)) {
+				checkParticle(proj);
+				checkCollisions(proj);
+			}
+		}
+		for(Particle part: toBeAdded) {
+			addParticle(part);
+		}
+		toBeAdded.clear();
+	}
+	
+	private void checkParticle(Particle particle) {
+		if (particle.getPosition().getX() < 0 || particle.getPosition().getX() > size.getX()) {
+			particle.getVelocity().setX(-particle.getVelocity().getX());
+		}
+		if (particle.getPosition().getY() < 0 || particle.getPosition().getY() > size.getY()) {
+			particle.getVelocity().setY(-particle.getVelocity().getY());
+		}
+		if (particle.getPosition().getZ() < 0 || particle.getPosition().getZ() > size.getZ()) {
+			particle.getVelocity().setZ(-particle.getVelocity().getZ());
+		}
+	}
+	
+	/**
+	 * This runs the whole simulation
+	 * @param deltaTime The amount of time to advance the simulation each step
+	 */
+	public void run(double deltaTime) {
+		ParticleVisualizer viz = new ParticleVisualizer(this, deltaTime);
+		
+		JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(viz);
+		frame.setSize(viz.getWidth(), viz.getHeight());
+
+		frame.setVisible(true);		
+	}
+}

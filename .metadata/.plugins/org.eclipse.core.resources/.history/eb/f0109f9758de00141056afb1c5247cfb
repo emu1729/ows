@@ -1,0 +1,27 @@
+package statistics;
+
+import java.util.Random;
+
+public class PoissonDistribution {
+	private double lambda;
+	private static Random random = new Random();
+	
+	public PoissonDistribution(double lambda){
+		this.lambda = lambda;
+	}
+	
+	public int getRandomNumber(){
+		int result = 0;
+		double scaler = Math.exp(-lambda);
+		double adder = scaler;
+		double ran = random.nextDouble();
+		
+		while (ran > adder) {
+			++result;
+			scaler *= lambda / result;
+			adder += scaler;
+		}
+		
+		return result;
+	}
+}

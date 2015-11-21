@@ -1,0 +1,21 @@
+package statistics;
+
+public class StatisticsDriver {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		level_1();
+	}
+	
+	public static void level_1(){
+		double increment = 0.02;
+		int range = 200;
+		int observedBackground = 47;
+		int expectedBackground = 45;
+		double numOfRandom = 10e5;
+		double trueLambda = 0;
+		PoissonDistribution potentialPoisson = new PoissonDistribution();
+		trueLambda = potentialPoisson.getBestLambda(expectedBackground, observedBackground, range, numOfRandom, increment);
+		
+	}
+}

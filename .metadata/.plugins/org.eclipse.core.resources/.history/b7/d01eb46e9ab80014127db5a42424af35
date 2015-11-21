@@ -1,0 +1,21 @@
+package boltzmannHomework;
+
+import java.awt.*;
+import java.util.*;
+
+public class MaxwellBoltzmannGenerator extends RandomGenerator{
+	
+	private double temperature;
+	Random random = new Random();
+	
+	public MaxwellBoltzmannGenerator (double mass, Color color, double meanFreeTime, ParticleContainer grid, double temperature)
+	{
+		super(mass, color, meanFreeTime, grid);
+		this.temperature = temperature;
+	}
+	
+	protected double getSpeed() {
+		double probability = random.nextDouble();
+		return probability;
+	}
+}

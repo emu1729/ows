@@ -1,0 +1,25 @@
+package Count;
+
+public class FrequentWords {
+	
+	public FrequentWords(){
+	}
+	
+	/**
+	 * 
+	 * @param text
+	 * @param pattern
+	 * @return number of pattern in text
+	 */
+	public static int FrequentWordCount(String text, String pattern) {
+		// TODO Auto-generated constructor stub
+		int count = 0;
+		for(int i = 0; i <= (text.length() - pattern.length()); i++){
+			if(text.substring(i, i+pattern.length()).equals(pattern)){
+				count++;
+			}
+		}
+		return count;
+	}
+
+}

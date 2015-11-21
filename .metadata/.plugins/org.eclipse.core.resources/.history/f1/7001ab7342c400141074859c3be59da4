@@ -1,0 +1,102 @@
+package chemicalReactionsHomework;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.swing.JPanel;
+
+public class TimelineBoard extends JPanel implements ActionListener {
+
+	private List<Timeline> timelines = new ArrayList<>();
+	
+	private static final int X_SIZE = 1000;
+	private static final int Y_SIZE = 600;
+	
+	private static final double BORDER = .05;
+	
+	private ParticleContainer grid;
+	
+	private int maximum = 0;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2894866921233873348L;
+
+	/**
+	 * @param grid - this must have been filled with Particles before calling this function
+	 */
+	public TimelineBoard(ParticleContainer grid) {
+		this.grid = grid;
+		setSize(X_SIZE, Y_SIZE);
+		setBackground(Color.WHITE);
+		
+		fillTimelines();
+	}
+	
+	private void fillTimelines() {
+		for (String str : grid.getDictionary().getList()) {
+			addTimeline(new Timeline(str, grid.getDictionary().getColor(str)));
+		}
+	}
+	
+	public void addTimeline(Timeline timeline) {
+		timelines.add(timeline);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		updateTimelines();
+		repaint();
+	}
+	
+	private void updateTimelines() {
+		Map<String, Integer> mymap = grid.getParticleMap();	
+		for (Entry<String, Integer> entry : mymap.entrySet()) {
+			Timeline myTimeline = getTimeline(entry.getKey());
+			myTimeline.addPoint(entry.getValue());
+		}
+	}
+	
+	private Timeline getTimeline(String name) {
+		for (Timeline timeline : timelines) {
+			if (timeline.getName() == name) {
+				return timeline;
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public void paint(Graphics arg0) {
+		super.paint(arg0);
+		setMax();
+		
+		Rectangle grid = new Rectangle((int)(BORDER * X_SIZE), (int)(BORDER * Y_SIZE), (int)(X_SIZE * (1 - 2 * BORDER)),
+				(int)(Y_SIZE * (1 - 2 * BORDER)));
+
+		
+		for (Timeline timeline : timelines) {
+			timeline.paint(arg0, grid, maximum);
+		}
+
+	}
+	
+	private void setMax() {
+		for (Timeline timeline : timelines) {
+			int checkMax = timeline.getMax();
+			if (checkMax > maximum) {
+				maximum = checkMax;
+			}
+		}
+	}
+
+}

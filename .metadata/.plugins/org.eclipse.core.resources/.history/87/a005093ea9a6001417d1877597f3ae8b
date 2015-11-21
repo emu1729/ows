@@ -1,0 +1,93 @@
+package gravitation1;
+
+public class RunGravitation {
+
+	private static final double timeIncrement = 50000;
+	private static final int nIncrements = 200;
+	
+	private static final double EARTH_MASS = 5.972 * Math.pow(10, 24);
+	private static final double MOON_MASS = 7.3476739 * Math.pow(10, 22);
+	
+	private static final double DISTANCE_EARTH_MOON = 385000000;
+	
+	private static final double MOON_VELOCITY = 1023; //m per second
+	private static final double EARTH_RADIUS = 6371000;
+	
+	private static final double smallIncrement = 100000;
+	private static final double numberOfIncrement = 100;
+	
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		//level1();
+		//level2();
+		level3();
+		//challenge();
+	}
+	
+	public static void level1()
+	{
+		GravitationEngine universe = new GravitationEngine(System.out);
+		universe.addProjectile(new PointProjectile(new Vector3(), new Vector3(), EARTH_MASS, "Earth"));
+		universe.addProjectile(new PointProjectile(new Vector3(DISTANCE_EARTH_MOON, 0, 0), new Vector3(0, MOON_VELOCITY, 0), MOON_MASS, "Moon"));
+		System.out.println(universe.header());
+		universe.run(timeIncrement, nIncrements, true);
+	}
+	
+	public static void level2()
+	{
+		GravitationEngine universe = new GravitationEngine(System.out);
+		ExtendedProjectile earth = new ExtendedProjectile("Earth");
+		for(int i = 0; i < EARTH_RADIUS; i+=smallIncrement)
+		{
+			for(int j = 0; j < EARTH_RADIUS; j+=smallIncrement)
+			{
+				for(int k = 0; k < EARTH_RADIUS; k+=smallIncrement)
+				{
+					double xPosition = i*(DISTANCE_EARTH_MOON/EARTH_RADIUS) - (DISTANCE_EARTH_MOON-smallIncrement);
+					double yPosition = j - (EARTH_RADIUS-smallIncrement)/2;
+					double zPosition = k - (EARTH_RADIUS-smallIncrement)/2;
+					double mass = EARTH_MASS/(Math.pow(EARTH_RADIUS/smallIncrement, 3));
+					earth.addProjectile(new PointProjectile(new Vector3(xPosition, yPosition, zPosition), new Vector3(), mass, ""));
+				}
+			}
+		}
+		universe.addProjectile(earth);
+		universe.addProjectile(new PointProjectile(new Vector3(DISTANCE_EARTH_MOON, 0, 0), new Vector3(0, MOON_VELOCITY, 0), MOON_MASS, "Moon"));
+		System.out.println(universe.header());
+		universe.run(timeIncrement, nIncrements, true);
+	}
+	
+	public static void level3()
+	{
+		GravitationEngine universe = new GravitationEngine(System.out);
+		ExtendedProjectile earth = new ExtendedProjectile("Earth");
+		for(double i = 0; i <= 2*EARTH_RADIUS; i+=(2*EARTH_RADIUS)/numberOfIncrement)
+		{
+			for(double j = 0; j <= 2*EARTH_RADIUS; j+=(2*EARTH_RADIUS)/numberOfIncrement)
+			{
+				for(double k = 0; k <= 2*EARTH_RADIUS; k+=(2*EARTH_RADIUS)/numberOfIncrement)
+				{
+					double newSmallIncrement = (2*EARTH_RADIUS)/numberOfIncrement;
+					double xPosition = i*(DISTANCE_EARTH_MOON/EARTH_RADIUS) - (DISTANCE_EARTH_MOON-smallIncrement);
+					double yPosition = j - (EARTH_RADIUS-newSmallIncrement)/2;
+					double zPosition = k - (EARTH_RADIUS-newSmallIncrement)/2;
+					double mass = EARTH_MASS/(Math.pow(numberOfIncrement, 3));
+					if(new Vector3(xPosition, yPosition, zPosition).magnitude() < EARTH_RADIUS)
+					{
+						earth.addProjectile(new PointProjectile(new Vector3(xPosition, yPosition, zPosition), new Vector3(), mass, ""));
+					}
+				}
+			}
+		}
+		universe.addProjectile(earth);
+		universe.addProjectile(new PointProjectile(new Vector3(DISTANCE_EARTH_MOON, 0, 0), new Vector3(0, MOON_VELOCITY, 0), MOON_MASS, "Moon"));
+		System.out.println(universe.header());
+		universe.run(timeIncrement, nIncrements, true);
+		
+	}
+	
+	public static void challenge()
+	{
+	}
+}

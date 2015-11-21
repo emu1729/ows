@@ -1,0 +1,146 @@
+package heatHomework;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JFrame;
+
+public class HeatGrid {
+	
+	ArrayList<ArrayList<ArrayList<HeatElement>>> grid = new ArrayList<ArrayList<ArrayList<HeatElement>>>();
+	double thermalDiffusivity;
+	double ambientTemp;
+	
+	public HeatGrid(double thermalDiffusivity, double initialTemp, Vector3 min, Vector3 max, Coordinate size, double ambientTemp) {
+		this.thermalDiffusivity = thermalDiffusivity;
+		this.ambientTemp = ambientTemp;
+		
+		/**
+		 * @param thermalDiffusivity The thermal diffusivity constant
+		 * @param initialTemp The original temperature of each element. This can be freely modified with getCell().setTemperature().
+		 * @param min The minimum x, y, and z values of the object in physical space.
+		 * @param max The maximum x, y, and z values of the object in physical space.
+		 * @param size The number of elements in the object in the x, y, and z direction. Make sure each component is at least 1.
+		 */
+
+		double xIncrement = getIncrement(min.getX(), max.getX(), size.getX());
+		double yIncrement = getIncrement(min.getY(), max.getY(), size.getY());
+		double zIncrement = getIncrement(min.getZ(), max.getZ(), size.getZ());
+		
+		for (int ix = 0; ix < size.getX(); ++ix) {
+			grid.add(new ArrayList<ArrayList<HeatElement>>());
+			for (int iy = 0; iy < size.getY(); ++iy) {
+				grid.get(ix).add(new ArrayList<HeatElement>());
+				for (int iz = 0; iz < size.getZ(); ++iz) {
+					double xCoord = getCoord(min.getX(), xIncrement, ix);
+					double yCoord = getCoord(min.getY(), yIncrement, iy);
+					double zCoord = getCoord(min.getZ(), zIncrement, iz);
+					
+					HeatElement el = new HeatElement(this, new Vector3(xCoord, yCoord, zCoord), 
+							new Coordinate(ix, iy, iz), initialTemp);
+					grid.get(ix).get(iy).add(el);
+				}
+			}
+		}
+	}
+	
+	public double getAmbientTemp()
+	{
+		return ambientTemp;
+	}
+	
+	public int getXSize() {
+		return grid.size();
+	}
+	
+	public int getYSize() {
+		return grid.get(0).size();
+	}
+	
+	public int getZSize() {
+		return grid.get(0).get(0).size();
+	}
+	
+	public double getDx() {
+		if (getXSize() <= 1) {
+			return 0;
+		} else {
+			return getCell(1, 0, 0).getPosition().getX() - getCell(0, 0, 0).getPosition().getX();
+		}
+	}
+	
+	public double getDy() {
+		if (getYSize() <= 1) {
+			return 0;
+		} else {
+			return getCell(0, 1, 0).getPosition().getY() - getCell(0, 0, 0).getPosition().getY();
+		}	
+	}
+
+	public double getDz() {
+		if (getZSize() <= 1) {
+			return 0;
+		} else {
+			return getCell(0, 0, 1).getPosition().getZ() - getCell(0, 0, 0).getPosition().getZ();
+		}	
+	}
+	
+	public Vector3 getMin() {
+		return grid.get(0).get(0).get(0).getPosition();
+	}
+	
+	public Vector3 getMax() {
+		return grid.get(getXSize() - 1).get(getYSize() - 1).get(getZSize() - 1).getPosition();		
+	}
+	
+	public double getDiffusivity() {
+		return thermalDiffusivity;
+	}
+	
+	public List<HeatElement> getElements() {
+		List<HeatElement> answer = new ArrayList<HeatElement>();
+		
+		for (ArrayList<ArrayList<HeatElement>> xlist : grid) {
+			for (ArrayList<HeatElement> ylist : xlist) {
+				for (HeatElement element : ylist) {
+					answer.add(element);
+				}
+			}
+		}
+		
+		return answer;
+	}
+	
+	private double getIncrement(double min, double max, int size) {
+		return size == 0 ? 0 : Math.abs(max - min) / size;
+	}
+	
+	private double getCoord(double min, double increment, int index) {
+		return min + index * increment;
+	}
+	
+	public HeatElement getCell(int xCoord, int yCoord, int zCoord) {
+		return grid.get(xCoord).get(yCoord).get(zCoord);
+	}
+	
+	public void update(double deltaT) {
+		for (ArrayList<ArrayList<HeatElement>> xlist : grid) {
+			for (ArrayList<HeatElement> ylist : xlist) {
+				for (HeatElement element : ylist) {
+					element.update(deltaT);
+				}
+			}
+		}
+	}
+	
+	public void run(double timeIncrement, double timeScale, double maxTemp) {
+		HeatVisualizer viz = new HeatVisualizer(this, timeIncrement, timeScale, maxTemp);
+		
+		JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(viz);
+		frame.setSize(viz.getWidth(), viz.getHeight());
+
+		frame.setVisible(true);			
+	}
+}

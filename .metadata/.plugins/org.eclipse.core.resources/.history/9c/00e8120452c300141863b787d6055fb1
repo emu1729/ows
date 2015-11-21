@@ -1,0 +1,93 @@
+package chemicalReactionsHomework;
+
+import java.awt.Color;
+
+public class ChemistryDriver {
+	//container properties
+	static private final double size = 50;
+	static private final double reactionRadius = 1;
+	static private final double meanFreeTime = 1;
+	static private final double temperature = 293.15;
+	static private final double deltaTime = 0.1;
+	//NH3 properties
+	static private final double massNH3 = 2.82e-23;
+	static private final Color colorNH3 = Color.RED;
+	//HCl properties
+	static private final double massHCl = 36.4609/(6.02e23);
+	static private final Color colorHCl = Color.BLUE;
+	//NH4Cl
+	static private final double massNH4Cl = 53.491/(6.02e23);
+	static private final Color colorNH4Cl = Color.GREEN;
+	//CO2 properties
+	static private final double massCO2 = 44.0095/(6.02e23);
+	static private final Color colorCO2 = Color.YELLOW;
+	//H2O properties
+	static private final double massH2O = 18.02/(6.02e23);
+	static private final Color colorH2O = Color.CYAN;
+	//HCO3- properties
+	static private final double massHCO3 = 61.0168/(6.02e23);
+	static private final Color colorHCO3 = Color.PINK;
+	//H3O+ properties
+	static private final double massH3O = 19.02322/(6.02e23);
+	static private final Color colorH3O = Color.ORANGE;
+	//Catalyst properties
+	static private final double massCat = 4.317e-20/5;
+	static private final Color colorCat = Color.GRAY;
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		//level1();
+		//level2();
+		level3();
+	}
+	
+	public static void level1()
+	{
+		ParticleContainer container = new ParticleContainer(size, size, size, reactionRadius);
+		container.getDictionary().addParticle("NH3", massNH3, colorNH3, meanFreeTime);
+		container.getDictionary().addParticle("HCl", massHCl, colorHCl, meanFreeTime);
+		container.getDictionary().addParticle("NH4Cl", massNH4Cl, colorNH4Cl, meanFreeTime);
+		RandomGenerator generator = new BoltzmannGenerator(container, temperature);
+		final int nPart = 1000;
+		container.addRandomParticles(generator, nPart, "NH3");
+		container.addRandomParticles(generator, nPart, "HCl");
+		container.run(deltaTime);
+	}
+	
+	public static void level2()
+	{
+		ParticleContainer container = new ParticleContainer(size, size, size, reactionRadius);
+		container.getDictionary().addParticle("H2O", massH2O, colorH2O, meanFreeTime);
+		container.getDictionary().addParticle("CO2", massCO2, colorCO2, meanFreeTime);
+		container.getDictionary().addParticle("H3O", massH3O, colorH3O, meanFreeTime);
+		container.getDictionary().addParticle("HCO3", massHCO3, colorHCO3, meanFreeTime);
+		RandomGenerator generator = new BoltzmannGenerator(container, temperature);
+		final int nPart = 1000;
+		container.addRandomParticles(generator, nPart, "H3O");
+		container.addRandomParticles(generator, nPart, "HCO3");
+		final double kineticBarrier = 5e-20;
+		container.setKineticBarrier(kineticBarrier);
+		container.run(deltaTime);
+	}
+	
+	public static void level3()
+	{
+		ParticleContainer container = new ParticleContainer(size, size, size, reactionRadius);
+		container.getDictionary().addParticle("H2O", massH2O, colorH2O, meanFreeTime);
+		container.getDictionary().addParticle("CO2", massCO2, colorCO2, meanFreeTime);
+		container.getDictionary().addParticle("H3O", massH3O, colorH3O, meanFreeTime);
+		container.getDictionary().addParticle("HCO3", massHCO3, colorHCO3, meanFreeTime);
+		container.getDictionary().addParticle("CAT", massCat, colorCat, meanFreeTime);
+		RandomGenerator generator = new BoltzmannGenerator(container, temperature);
+		final int nPart = 1000;
+		container.addRandomParticles(generator, nPart, "H3O");
+		container.addRandomParticles(generator, nPart, "HCO3");
+		final int nPartCat = 1;
+		container.addRandomParticles(generator, nPartCat, "CAT");
+		final double kineticBarrier = 8e-20;
+		container.setKineticBarrier(kineticBarrier);
+		container.run(deltaTime);
+	}
+
+}

@@ -1,0 +1,37 @@
+package Count;
+
+import java.util.*;
+
+public class HiddenMessage {
+	
+	private static HashMap<String, Integer> list;
+	private static String DNA;
+	private static int k;
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		level_1();
+	}
+
+	public static void level_1(){
+		System.out.println("HI");
+		list = new HashMap<String, Integer>();
+		DNA = "CGGAGGACTCTAGGTAACGCTTATCAGGTCCATAGGACATTCA";
+		k = 3;
+		for (int i = 0; i < DNA.length() - k; i++){
+			String temp = DNA.substring(i, i+2);
+			for(String s: list.keySet()){
+				if(temp.equals(s)){
+					int currentNum = list.get(s) + 1;
+					list.put(s, currentNum);
+				}
+				else{
+					list.put(temp, 1);
+				}
+			}
+		}
+		for(String s: list.keySet()){
+			System.out.println(s + ": " + list.get(s));
+		}
+	}
+}

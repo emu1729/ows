@@ -1,0 +1,9 @@
+package Count;
+
+public class FrequentWords {
+
+	public FrequentWords() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

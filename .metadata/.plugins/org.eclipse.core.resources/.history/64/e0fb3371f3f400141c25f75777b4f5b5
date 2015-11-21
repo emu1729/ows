@@ -1,0 +1,9 @@
+package evolutionHomework;
+
+public class Pike {
+
+	public Pike() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

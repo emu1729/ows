@@ -1,0 +1,9 @@
+package Count;
+
+public class HiddenMessage {
+
+	public HiddenMessage() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

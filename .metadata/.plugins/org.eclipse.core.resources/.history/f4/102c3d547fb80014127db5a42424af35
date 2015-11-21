@@ -1,0 +1,13 @@
+package boltzmannHomework;
+
+import java.util.*;
+
+public class randomTemperature {
+
+	Random random = new Random();
+	
+	public double getRandomVelocity(int temperature)
+	{
+		return 0.0;
+	}
+}

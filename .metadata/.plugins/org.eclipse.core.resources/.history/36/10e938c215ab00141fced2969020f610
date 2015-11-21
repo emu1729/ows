@@ -1,0 +1,88 @@
+package gravitation1;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ExtendedProjectile extends Projectile {
+
+	List<PointProjectile> projectiles = new ArrayList<PointProjectile>();
+	private Vector3 totalForce;
+	
+	public ExtendedProjectile(String name) {
+		super(name);
+	}
+	
+	public void addProjectile(PointProjectile proj) {
+		projectiles.add(proj);
+	}
+	/**
+	 * 
+	 * @return total mass of Extended Object
+	 */
+	public double totalMass()
+	{
+		double totalMass = 0;
+		for (PointProjectile proj: projectiles)
+		{
+			totalMass += proj.getMass();
+		}
+		return totalMass;
+	}
+	@Override
+	public String toString() {
+		return projectiles.get(0).getPosition() + "\t" + projectiles.get(0).getVelocity() + "\t" + projectiles.get(0).getAcceleration();
+		/**
+		String response = new String();
+		final int nTimes = 12;
+		for (int i = 0; i < nTimes; ++i) {
+			response += "0";
+			if (i != nTimes - 1) {
+				response += "\t";
+			}
+		}
+		return response;
+		**/
+	}
+
+	@Override
+	protected void setAccel(GravitationEngine engine) {
+		// TODO Auto-generated method stub
+		totalForce = Vector3.nullVector();
+		for(PointProjectile proj: projectiles)
+		{
+			proj.setAccel(engine);
+			totalForce = Vector3.add(totalForce, Vector3.scale(proj.getAcceleration(), proj.getMass()));
+		}
+		for(PointProjectile proj: projectiles)
+		{
+			proj.addForce(totalForce);
+		}
+	}
+
+	@Override
+	protected void advanceVelocity(double timeIncrement) {
+		// TODO Auto-generated method stub
+		for(PointProjectile proj: projectiles)
+		{
+			proj.advanceVelocity(timeIncrement);
+		}
+
+	}
+
+	@Override
+	protected void advancePosition(double timeIncrement) {
+		// TODO Auto-generated method stub
+		for(PointProjectile proj: projectiles)
+		{
+			proj.advancePosition(timeIncrement);
+		}
+	}
+
+	@Override
+	public void addToList(List<PointProjectile> list) {
+		for (PointProjectile proj : projectiles) {
+			list.add(proj);
+		}
+	}
+
+}

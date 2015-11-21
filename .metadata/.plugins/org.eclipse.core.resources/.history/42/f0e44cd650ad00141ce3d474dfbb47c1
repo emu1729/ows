@@ -1,0 +1,74 @@
+package heatHomework;
+
+public class HeatDriver {
+
+	// Fill all these in with real numbers
+	private static final double THERMAL_DIFFUSIVITY = 0.1;
+	private static final double initialTemp = 10;
+	private static final Vector3 min = new Vector3(0, 0, 0);
+	private static final Vector3 max = new Vector3(10, 10, 0);
+	private static final Coordinate size = new Coordinate(50, 50, 1);
+	private static final double timeIncrement = 0.1;
+	private static final double tempSpike = 100;
+	private static final double ambientTemp = 0;
+	
+	private static final Coordinate spikeLocation = new Coordinate(25, 25, 0);
+	private static final double timeScale = 1;
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		level1();
+		//level2();
+		//level3();
+	}
+	
+	public static void level1() {
+		double THERMAL_DIFFUSIVITY = 0.1;
+		double initialTemp = 10;
+		Vector3 min = new Vector3(0, 0, 0);
+		Vector3 max = new Vector3(20, 1, 1);
+		Coordinate size = new Coordinate(50, 1, 1);
+		double timeIncrement = 0.1;
+		double tempSpike = 100;
+		double ambientTemp = 0;
+		Coordinate spikeLocation = new Coordinate(25, 0, 0);
+		double timeScale = 1;
+		HeatGrid grid = new HeatGrid(THERMAL_DIFFUSIVITY, initialTemp, min, max, size, ambientTemp);
+		grid.getCell(spikeLocation.getX(), spikeLocation.getY(), spikeLocation.getZ()).setTemperature(tempSpike);
+		grid.run(timeIncrement, timeScale, tempSpike);
+	}
+	
+	public static void level2() {
+		double THERMAL_DIFFUSIVITY = 0.1;
+		double initialTemp = 10;
+		Vector3 min = new Vector3(0, 0, 0);
+		Vector3 max = new Vector3(10, 10, 1);
+		Coordinate size = new Coordinate(50, 50, 1);
+		double timeIncrement = 0.1;
+		double tempSpike = 100;
+		double ambientTemp = 0;
+		Coordinate spikeLocation = new Coordinate(25, 25, 0);
+		double timeScale = 1;
+		HeatGrid grid = new HeatGrid(THERMAL_DIFFUSIVITY, initialTemp, min, max, size, ambientTemp);
+		grid.getCell(spikeLocation.getX(), spikeLocation.getY(), spikeLocation.getZ()).setTemperature(tempSpike);
+		grid.run(timeIncrement, timeScale, tempSpike);
+	}
+	
+	public static void level3() {
+		double THERMAL_DIFFUSIVITY = 0.1;
+		double initialTemp = 10;
+		Vector3 min = new Vector3(0, 0, 0);
+		Vector3 max = new Vector3(20, 1, 1);
+		Coordinate size = new Coordinate(50, 1, 1);
+		double timeIncrement = 0.1;
+		double tempSpike = 100;
+		double ambientTemp = 0;
+		Coordinate spikeLocation = new Coordinate(25, 0, 0);
+		double timeScale = 1;
+		HeatGrid grid = new HeatGrid(THERMAL_DIFFUSIVITY, initialTemp, min, max, size, ambientTemp);
+		grid.getCell(spikeLocation.getX(), spikeLocation.getY(), spikeLocation.getZ()).setTemperature(tempSpike);
+		grid.run(timeIncrement, timeScale, tempSpike);
+	}
+
+}

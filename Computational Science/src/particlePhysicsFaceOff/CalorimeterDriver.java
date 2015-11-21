@@ -1,0 +1,34 @@
+package particlePhysicsFaceOff;
+
+import java.util.*;
+
+import java.io.*;
+import java.awt.*;
+import java.util.List;
+
+public class CalorimeterDriver {
+	
+	public static void main(String[] args) throws FileNotFoundException{
+		challenge();
+	}
+
+
+	public static void challenge() throws FileNotFoundException{
+		//PrintStream file = new PrintStream(new FileOutputStream("calorimetry.xls"));
+		ClusterVisualizer viz = ClusterVisualizer.createVisualizer();
+		IOHelper<Data> myReader = new IOHelper<>();
+		Data data = myReader.read("forFriendsBackgroundSample.dat");
+		int count = 1;
+		for(Event e: data.getEvents()){
+			System.out.println(count);
+			CalorimeterEvent event = e.getClusters();
+			event.extendsTowers();
+			event.getMaxima();
+			event.getSortedEnergies();
+			count++;
+			}
+		}
+
+	}
+	
+

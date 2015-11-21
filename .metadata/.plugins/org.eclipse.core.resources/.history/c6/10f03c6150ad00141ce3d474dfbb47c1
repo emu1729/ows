@@ -1,0 +1,77 @@
+package heatHomework;
+
+public class HeatElement {
+
+	private Vector3 location;
+	private Coordinate coord;
+	private double temperature;
+	private HeatGrid map;
+	
+	public HeatElement(HeatGrid heatGrid, Vector3 location, Coordinate coord, double temperature) {
+		this.location = location;
+		this.coord = coord;
+		this.temperature = temperature;
+		this.map = heatGrid;
+	}
+	
+	public double getTemperature() {
+		return temperature;
+	}
+
+	public void setTemperature(double temperature) {
+		this.temperature = temperature;
+	}
+	
+	public Coordinate getCoord() {
+		return coord;
+	}
+	
+	public Vector3 getPosition() {
+		return location;
+	}
+	
+	public void update(double deltaTime) {
+		// TODO Write this function to implement the heat equation
+		double leftChangeInTempX = 0;
+		double rightChangeInTempX = 0;
+		try
+		{
+			leftChangeInTempX = temperature - map.getCell(coord.getX()-1, coord.getY(), coord.getZ()).getTemperature();
+		}
+		catch(IndexOutOfBoundsException ex)
+		{
+			leftChangeInTempX = 0;
+			//leftChangeInTempX = temperature - map.getAmbientTemp();
+		}
+		try
+		{
+			rightChangeInTempX = map.getCell(coord.getX()+1, coord.getY(), coord.getZ()).getTemperature() - temperature;
+		}
+		catch(IndexOutOfBoundsException ex)
+		{
+			//rightChangeInTempX = map.getAmbientTemp() - temperature;
+			rightChangeInTempX = 0;
+		}
+		double changeInTempX = deltaTime * map.getDiffusivity() * (rightChangeInTempX - leftChangeInTempX);
+		double leftChangeInTempY = 0;
+		double rightChangeInTempY = 0;
+		try
+		{
+			leftChangeInTempY = temperature - map.getCell(coord.getX(), coord.getY()-1, coord.getZ()).getTemperature();
+		}
+		catch(IndexOutOfBoundsException ex)
+		{
+			leftChangeInTempY = temperature - map.getAmbientTemp();
+		}
+		try
+		{
+			rightChangeInTempY = map.getCell(coord.getX(), coord.getY()+1, coord.getZ()).getTemperature() - temperature;
+		}
+		catch(IndexOutOfBoundsException ex)
+		{
+			rightChangeInTempY = map.getAmbientTemp() - temperature;
+		}
+		double changeInTempY = deltaTime * map.getDiffusivity() * (rightChangeInTempY - leftChangeInTempY);
+		temperature += (changeInTempX + changeInTempY);
+	}
+}
